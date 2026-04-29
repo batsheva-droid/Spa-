@@ -1,263 +1,807 @@
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spa & Beauty Salon | Hindy Lane</title>
 
-// Phone number formatting
-function formatPhoneNumber(input) {
-    let phone = input.value.replace(/\D/g, '');
-    if (phone.length > 0) {
-        if (phone.length <= 3) {
-            phone = `(${phone}`;
-        } else if (phone.length <= 6) {
-            phone = `(${phone.slice(0, 3)}) ${phone.slice(3)}`;
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --cream:#F8F3EC;
+      --soft:#EFE4D8;
+      --blush:#E7D1C6;
+      --taupe:#A98572;
+      --deep:#4D3A33;
+      --green:#6F7E69;
+      --white:#FFFFFF;
+      --text:#5A4B45;
+      --muted:#8B7A71;
+      --shadow:0 24px 70px rgba(77,58,51,.14);
+      --radius:26px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Poppins',sans-serif;
+      color:var(--text);
+      background:var(--cream);
+      line-height:1.7;
+      overflow-x:hidden;
+    }
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+
+    .container{width:min(1160px,92%);margin:auto}
+
+    /* NAV */
+    .navbar{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(248,243,236,.88);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(77,58,51,.08);
+    }
+    .nav-inner{
+      height:78px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      color:var(--deep);
+      font-size:14px;
+      text-transform:uppercase;
+    }
+    .brand-icon{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      background:linear-gradient(145deg,var(--taupe),var(--blush));
+      color:white;
+      display:grid;
+      place-items:center;
+      box-shadow:0 12px 30px rgba(169,133,114,.28);
+    }
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:28px;
+      list-style:none;
+      font-size:14px;
+      color:var(--deep);
+    }
+    .nav-links a{opacity:.82;transition:.25s}
+    .nav-links a:hover{opacity:1;color:var(--taupe)}
+    .nav-cta{
+      background:var(--deep);
+      color:white!important;
+      padding:12px 22px;
+      border-radius:999px;
+      box-shadow:0 12px 28px rgba(77,58,51,.18);
+    }
+    .menu-btn{display:none;background:none;border:0;font-size:24px;color:var(--deep)}
+
+    /* HERO */
+    .hero{
+      position:relative;
+      min-height:calc(100vh - 78px);
+      display:grid;
+      align-items:center;
+      padding:80px 0;
+      overflow:hidden;
+    }
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:-20% -10% auto auto;
+      width:620px;
+      height:620px;
+      border-radius:50%;
+      background:radial-gradient(circle,rgba(231,209,198,.8),rgba(231,209,198,0) 68%);
+      z-index:-1;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      left:-180px;
+      bottom:-220px;
+      width:520px;
+      height:520px;
+      border-radius:50%;
+      background:radial-gradient(circle,rgba(111,126,105,.22),rgba(111,126,105,0) 68%);
+      z-index:-1;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.04fr .96fr;
+      gap:58px;
+      align-items:center;
+    }
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:9px 14px;
+      border:1px solid rgba(169,133,114,.25);
+      border-radius:999px;
+      background:rgba(255,255,255,.48);
+      color:var(--taupe);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-weight:700;
+      margin-bottom:22px;
+    }
+    .hero h1{
+      font-family:'Libre Baskerville',serif;
+      font-size:clamp(46px,7vw,86px);
+      line-height:1.04;
+      color:var(--deep);
+      font-weight:400;
+      letter-spacing:-.04em;
+      margin-bottom:20px;
+    }
+    .hero h1 span{color:var(--taupe);font-style:italic}
+    .hero-copy{
+      font-size:18px;
+      color:var(--muted);
+      max-width:590px;
+      margin-bottom:32px;
+    }
+    .hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      min-height:52px;
+      padding:0 24px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:14px;
+      transition:.25s;
+      border:1px solid transparent;
+      cursor:pointer;
+    }
+    .btn-primary{background:var(--deep);color:white;box-shadow:0 18px 40px rgba(77,58,51,.22)}
+    .btn-primary:hover{transform:translateY(-3px);box-shadow:0 24px 50px rgba(77,58,51,.28)}
+    .btn-soft{background:rgba(255,255,255,.62);color:var(--deep);border-color:rgba(77,58,51,.1)}
+    .btn-soft:hover{background:white;transform:translateY(-3px)}
+
+    .hero-card{
+      position:relative;
+      border-radius:38px;
+      min-height:590px;
+      background:
+        linear-gradient(180deg,rgba(77,58,51,.08),rgba(77,58,51,.52)),
+        url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=85') center/cover;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .floating-card{
+      position:absolute;
+      left:26px;
+      right:26px;
+      bottom:26px;
+      background:rgba(255,255,255,.82);
+      backdrop-filter:blur(18px);
+      border:1px solid rgba(255,255,255,.55);
+      border-radius:28px;
+      padding:24px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:16px;
+      align-items:center;
+    }
+    .floating-card strong{
+      display:block;
+      color:var(--deep);
+      font-family:'Libre Baskerville',serif;
+      font-size:22px;
+      margin-bottom:4px;
+    }
+    .floating-card span{font-size:13px;color:var(--muted)}
+    .license-badge{
+      width:82px;height:82px;border-radius:50%;
+      background:var(--green);
+      color:white;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      font-size:11px;
+      line-height:1.25;
+      font-weight:700;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    /* SECTIONS */
+    section{padding:95px 0}
+    .section-head{text-align:center;max-width:720px;margin:0 auto 54px}
+    .section-kicker{
+      color:var(--taupe);
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-size:12px;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+    .section-title{
+      font-family:'Libre Baskerville',serif;
+      color:var(--deep);
+      font-size:clamp(34px,4.5vw,58px);
+      line-height:1.12;
+      font-weight:400;
+    }
+    .section-sub{color:var(--muted);margin-top:16px;font-size:16px}
+
+    .services{background:white}
+    .services-grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:18px;
+    }
+    .service-card{
+      background:linear-gradient(180deg,#fff,var(--cream));
+      border:1px solid rgba(77,58,51,.08);
+      border-radius:var(--radius);
+      padding:28px 20px;
+      min-height:235px;
+      box-shadow:0 16px 45px rgba(77,58,51,.07);
+      transition:.25s;
+      cursor:pointer;
+    }
+    .service-card:hover{transform:translateY(-8px);box-shadow:0 24px 55px rgba(77,58,51,.13)}
+    .service-icon{
+      width:56px;height:56px;border-radius:18px;
+      background:rgba(169,133,114,.12);
+      color:var(--taupe);
+      display:grid;
+      place-items:center;
+      font-size:23px;
+      margin-bottom:20px;
+    }
+    .service-card h3{
+      font-family:'Libre Baskerville',serif;
+      color:var(--deep);
+      font-size:22px;
+      margin-bottom:9px;
+      font-weight:400;
+    }
+    .service-card p{font-size:14px;color:var(--muted);line-height:1.65}
+
+    .about-wrap{
+      display:grid;
+      grid-template-columns:.9fr 1.1fr;
+      gap:54px;
+      align-items:center;
+    }
+    .about-image{
+      min-height:490px;
+      border-radius:38px;
+      background:url('https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=1000&q=85') center/cover;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .about-image:after{
+      content:"Clean • Life • Love";
+      position:absolute;
+      bottom:22px;
+      left:22px;
+      right:22px;
+      background:rgba(255,255,255,.78);
+      backdrop-filter:blur(15px);
+      border-radius:22px;
+      padding:18px 20px;
+      text-align:center;
+      color:var(--deep);
+      font-family:'Libre Baskerville',serif;
+      font-size:24px;
+    }
+    .about-copy h2{
+      font-family:'Libre Baskerville',serif;
+      color:var(--deep);
+      font-size:clamp(34px,4vw,56px);
+      line-height:1.12;
+      font-weight:400;
+      margin-bottom:22px;
+    }
+    .about-copy p{color:var(--muted);font-size:16px;margin-bottom:18px}
+    .about-points{display:grid;gap:13px;margin-top:24px}
+    .point{display:flex;gap:12px;align-items:flex-start;color:var(--deep);font-weight:600}
+    .point i{color:var(--green);margin-top:5px}
+
+    .booking{background:linear-gradient(180deg,#fff 0%,var(--cream) 100%)}
+    .booking-shell{
+      display:grid;
+      grid-template-columns:.85fr 1.15fr;
+      gap:28px;
+      align-items:stretch;
+    }
+    .booking-note{
+      background:var(--deep);
+      color:white;
+      border-radius:34px;
+      padding:42px;
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:100%;
+    }
+    .booking-note h3{
+      font-family:'Libre Baskerville',serif;
+      font-size:38px;
+      line-height:1.14;
+      font-weight:400;
+      margin-bottom:18px;
+    }
+    .booking-note p{color:rgba(255,255,255,.78);margin-bottom:26px}
+    .contact-mini{display:grid;gap:12px;color:rgba(255,255,255,.88);font-size:15px}
+    .contact-mini i{width:22px;color:var(--blush)}
+
+    .booking-form{
+      background:white;
+      border:1px solid rgba(77,58,51,.08);
+      border-radius:34px;
+      padding:36px;
+      box-shadow:0 20px 60px rgba(77,58,51,.1);
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+    .full{grid-column:1/-1}
+    label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--taupe);margin-bottom:7px}
+    input,select,textarea{
+      width:100%;
+      border:1px solid rgba(77,58,51,.15);
+      background:var(--cream);
+      border-radius:16px;
+      min-height:52px;
+      padding:0 15px;
+      color:var(--deep);
+      font:500 14px 'Poppins',sans-serif;
+      outline:none;
+      transition:.2s;
+    }
+    textarea{min-height:115px;padding:15px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:var(--taupe);background:white;box-shadow:0 0 0 4px rgba(169,133,114,.12)}
+    .submit-btn{
+      border:0;
+      width:100%;
+      min-height:56px;
+      border-radius:999px;
+      background:var(--green);
+      color:white;
+      font-weight:800;
+      letter-spacing:.04em;
+      cursor:pointer;
+      transition:.25s;
+    }
+    .submit-btn:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(111,126,105,.26)}
+
+    .contact{background:white;text-align:center}
+    .contact-cards{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+      margin-top:40px;
+    }
+    .contact-card{
+      background:var(--cream);
+      border-radius:26px;
+      padding:28px;
+      border:1px solid rgba(77,58,51,.08);
+    }
+    .contact-card i{font-size:25px;color:var(--taupe);margin-bottom:14px}
+    .contact-card h3{color:var(--deep);font-size:17px;margin-bottom:5px}
+    .contact-card p{color:var(--muted);font-size:14px}
+
+    .footer{
+      background:var(--deep);
+      color:rgba(255,255,255,.75);
+      text-align:center;
+      padding:28px 20px;
+      font-size:13px;
+    }
+
+    .notification{
+      position:fixed;
+      top:22px;
+      right:22px;
+      z-index:9999;
+      background:var(--deep);
+      color:white;
+      padding:16px 20px;
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      max-width:330px;
+      animation:slideIn .25s ease-out;
+      font-weight:600;
+    }
+    .notification.error{background:#A94E4E}
+    @keyframes slideIn{from{transform:translateX(30px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+    @media(max-width:980px){
+      .hero-grid,.about-wrap,.booking-shell{grid-template-columns:1fr}
+      .hero-card{min-height:460px;order:-1}
+      .services-grid{grid-template-columns:repeat(2,1fr)}
+      .contact-cards{grid-template-columns:1fr}
+    }
+
+    @media(max-width:760px){
+      .nav-inner{height:70px}
+      .menu-btn{display:block}
+      .nav-links{
+        position:absolute;
+        left:4%;right:4%;top:78px;
+        display:none;
+        flex-direction:column;
+        align-items:stretch;
+        gap:0;
+        background:white;
+        border-radius:24px;
+        padding:12px;
+        box-shadow:var(--shadow);
+      }
+      .nav-links.active{display:flex}
+      .nav-links li a{display:block;padding:13px 14px;border-radius:14px}
+      .nav-cta{text-align:center;margin-top:5px}
+      .hero{padding:46px 0 72px;min-height:auto}
+      .hero-card{min-height:380px;border-radius:28px}
+      .floating-card{left:16px;right:16px;bottom:16px;padding:18px;border-radius:22px}
+      .floating-card strong{font-size:18px}
+      .license-badge{width:68px;height:68px;font-size:9px}
+      section{padding:70px 0}
+      .services-grid{grid-template-columns:1fr}
+      .booking-form{grid-template-columns:1fr;padding:24px;border-radius:26px}
+      .booking-note{padding:30px;border-radius:26px}
+      .brand span{font-size:12px;letter-spacing:.08em}
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="#home" class="brand">
+        <span class="brand-icon"><i class="fa-solid fa-spa"></i></span>
+        <span>Spa & Beauty Salon</span>
+      </a>
+
+      <button class="menu-btn" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#booking">Booking</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#booking" class="nav-cta">Book Now</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><i class="fa-solid fa-leaf"></i> NJ State Licensed Esthetician</div>
+          <h1>Relaxed beauty, <span>glowing skin</span>.</h1>
+          <p class="hero-copy">A calm, private spa experience in the Prospect Area offering custom facials, waxing, tinting, skincare guidance, and beauty treatments designed around you.</p>
+          <div class="hero-actions">
+            <a href="#booking" class="btn btn-primary">Book an Appointment <i class="fa-solid fa-arrow-right"></i></a>
+            <a href="tel:7327030189" class="btn btn-soft"><i class="fa-solid fa-phone"></i> 732-703-0189</a>
+          </div>
+        </div>
+
+        <div class="hero-card" aria-label="Spa treatment room image">
+          <div class="floating-card">
+            <div>
+              <strong>Clean. Life. Love.</strong>
+              <span>Personalized treatments with a soft, luxury salon feel.</span>
+            </div>
+            <div class="license-badge">Licensed<br>Esthetician</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="services" id="services">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-kicker">Services</div>
+          <h2 class="section-title">Thoughtfully curated beauty treatments.</h2>
+          <p class="section-sub">Choose a service below, then send an appointment request. We’ll follow up to confirm your time.</p>
+        </div>
+
+        <div class="services-grid">
+          <div class="service-card" data-service="Facials">
+            <div class="service-icon"><i class="fa-solid fa-spa"></i></div>
+            <h3>Facials</h3>
+            <p>Custom facial treatments designed for your skin type, goals, and comfort.</p>
+          </div>
+          <div class="service-card" data-service="Waxing">
+            <div class="service-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <h3>Waxing</h3>
+            <p>Smooth, clean, professional hair removal in a calm private setting.</p>
+          </div>
+          <div class="service-card" data-service="Tinting">
+            <div class="service-icon"><i class="fa-solid fa-eye"></i></div>
+            <h3>Tinting</h3>
+            <p>Lash and brow tinting to softly define and brighten your features.</p>
+          </div>
+          <div class="service-card" data-service="Skincare Consultation">
+            <div class="service-icon"><i class="fa-solid fa-droplet"></i></div>
+            <h3>Skincare</h3>
+            <p>Personalized product and routine guidance for healthier everyday skin.</p>
+          </div>
+          <div class="service-card" data-service="Education">
+            <div class="service-icon"><i class="fa-solid fa-book-open"></i></div>
+            <h3>Education</h3>
+            <p>Learn simple, realistic skincare steps that fit your lifestyle.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="container about-wrap">
+        <div class="about-image"></div>
+        <div class="about-copy">
+          <div class="section-kicker">About</div>
+          <h2>A peaceful beauty experience with a personal touch.</h2>
+          <p>Welcome to Spa & Beauty Salon by Hindy Lane. Every appointment is designed to feel private, gentle, and elevated — whether you are coming in for a facial, waxing, tinting, or skincare support.</p>
+          <p>The goal is simple: help you feel polished, cared for, and confident in your own skin.</p>
+          <div class="about-points">
+            <div class="point"><i class="fa-solid fa-check"></i> NJ state licensed esthetician</div>
+            <div class="point"><i class="fa-solid fa-check"></i> Calm private appointment setting</div>
+            <div class="point"><i class="fa-solid fa-check"></i> Customized services for your skin and comfort</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="booking" id="booking">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-kicker">Book Now</div>
+          <h2 class="section-title">Request your appointment.</h2>
+          <p class="section-sub">Send your preferred service, date, and time. Your appointment will be confirmed by phone or message.</p>
+        </div>
+
+        <div class="booking-shell">
+          <div class="booking-note">
+            <div>
+              <h3>Ready for a softer, refreshed glow?</h3>
+              <p>Fill out the form and we’ll contact you to confirm availability. For faster booking, call directly.</p>
+            </div>
+            <div class="contact-mini">
+              <div><i class="fa-solid fa-phone"></i> 732-703-0189</div>
+              <div><i class="fa-solid fa-location-dot"></i> Hindy Lane, Prospect Area, NJ</div>
+              <div><i class="fa-solid fa-certificate"></i> NJ State Licensed Esthetician</div>
+            </div>
+          </div>
+
+          <form class="booking-form">
+            <div>
+              <label>Your Name</label>
+              <input type="text" name="name" placeholder="Full name" required>
+            </div>
+            <div>
+              <label>Phone</label>
+              <input type="tel" name="phone" placeholder="(732) 703-0189" required>
+            </div>
+            <div>
+              <label>Email</label>
+              <input type="email" name="email" placeholder="you@example.com" required>
+            </div>
+            <div>
+              <label>Service</label>
+              <select name="service" required>
+                <option value="">Select a service</option>
+                <option>Facials</option>
+                <option>Waxing</option>
+                <option>Tinting</option>
+                <option>Skincare Consultation</option>
+                <option>Education</option>
+              </select>
+            </div>
+            <div>
+              <label>Preferred Date</label>
+              <input type="date" name="date" required>
+            </div>
+            <div>
+              <label>Preferred Time</label>
+              <input type="time" name="time" required>
+            </div>
+            <div class="full">
+              <label>Notes</label>
+              <textarea name="notes" placeholder="Anything you’d like us to know?"></textarea>
+            </div>
+            <div class="full">
+              <button class="submit-btn" type="submit">Send Appointment Request</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-kicker">Contact</div>
+          <h2 class="section-title">Visit or get in touch.</h2>
+          <p class="section-sub">Have a question before booking? Reach out directly.</p>
+        </div>
+
+        <div class="contact-cards">
+          <a class="contact-card" href="tel:7327030189">
+            <i class="fa-solid fa-phone"></i>
+            <h3>Call</h3>
+            <p>732-703-0189</p>
+          </a>
+          <div class="contact-card">
+            <i class="fa-solid fa-location-dot"></i>
+            <h3>Location</h3>
+            <p>Hindy Lane, Prospect Area, NJ</p>
+          </div>
+          <a class="contact-card" href="mailto:hello@example.com">
+            <i class="fa-solid fa-envelope"></i>
+            <h3>Email</h3>
+            <p>Replace with your email</p>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    © 2026 Spa & Beauty Salon. All rights reserved. NJ State Licensed Esthetician.
+  </footer>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const menuBtn = document.querySelector('.menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    const bookingForm = document.querySelector('.booking-form');
+    const phoneInput = document.querySelector('input[type="tel"]');
+    const dateInput = document.querySelector('input[type="date"]');
+    const serviceSelect = document.querySelector('select[name="service"]');
+
+    function closeMenu() {
+      if (!navLinks || !menuBtn) return;
+      navLinks.classList.remove('active');
+      const icon = menuBtn.querySelector('i');
+      if (icon) {
+        icon.classList.add('fa-bars');
+        icon.classList.remove('fa-xmark');
+      }
+    }
+
+    function scrollToSection(selector) {
+      const target = document.querySelector(selector);
+      if (!target) return;
+      const navHeight = document.querySelector('.navbar')?.offsetHeight || 0;
+      const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+      window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+    }
+
+    if (menuBtn && navLinks) {
+      menuBtn.addEventListener('click', function () {
+        navLinks.classList.toggle('active');
+        const icon = menuBtn.querySelector('i');
+        if (icon) {
+          icon.classList.toggle('fa-bars');
+          icon.classList.toggle('fa-xmark');
+        }
+      });
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        const targetId = link.getAttribute('href');
+        if (!targetId || targetId === '#') return;
+        const target = document.querySelector(targetId);
+        if (!target) return;
+        e.preventDefault();
+        closeMenu();
+        scrollToSection(targetId);
+      });
+    });
+
+    if (dateInput) {
+      dateInput.min = new Date().toISOString().split('T')[0];
+    }
+
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function () {
+        let numbers = phoneInput.value.replace(/[^0-9]/g, '').slice(0, 10);
+        if (numbers.length > 6) {
+          phoneInput.value = '(' + numbers.slice(0, 3) + ') ' + numbers.slice(3, 6) + '-' + numbers.slice(6);
+        } else if (numbers.length > 3) {
+          phoneInput.value = '(' + numbers.slice(0, 3) + ') ' + numbers.slice(3);
+        } else if (numbers.length > 0) {
+          phoneInput.value = '(' + numbers;
         } else {
-            phone = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+          phoneInput.value = '';
         }
-    }
-    input.value = phone;
-}
-
-// Get phone input and add event listener
-const phoneInput = document.querySelector('input[type="tel"]');
-if (phoneInput) {
-    phoneInput.addEventListener('input', function() {
-        formatPhoneNumber(this);
-    });
-}
-
-// Booking form submission
-const bookingForm = document.querySelector('.booking-form');
-if (bookingForm) {
-    bookingForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = new FormData(this);
-        const data = {
-            name: this.querySelector('input[type="text"]').value,
-            email: this.querySelector('input[type="email"]').value,
-            phone: this.querySelector('input[type="tel"]').value,
-            service: this.querySelector('select').value,
-            date: this.querySelectorAll('input[type="date"]')[0].value,
-            time: this.querySelector('input[type="time"]').value
-        };
-
-        // Validate form
-        if (!data.name || !data.email || !data.phone || !data.service || !data.date || !data.time) {
-            showNotification('Please fill in all fields', 'error');
-            return;
-        }
-
-        // Validate email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.email)) {
-            showNotification('Please enter a valid email address', 'error');
-            return;
-        }
-
-        // Show success message
-        showNotification('Appointment request submitted! We will contact you soon to confirm.', 'success');
-        
-        // Reset form
-        this.reset();
-
-        // Log data (in production, this would be sent to a backend)
-        console.log('Booking Data:', data);
-    });
-}
-
-// Notification system
-function showNotification(message, type) {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 20px 30px;
-        background-color: ${type === 'success' ? '#a89968' : '#d9534f'};
-        color: white;
-        border-radius: 5px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        z-index: 10000;
-        animation: slideIn 0.3s ease-out;
-        font-weight: 600;
-    `;
-
-    document.body.appendChild(notification);
-
-    // Remove notification after 4 seconds
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => notification.remove(), 300);
-    }, 4000);
-}
-
-// Add animation styles
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
+      });
     }
 
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// Lazy loading for images (when added)
-if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.add('loaded');
-                observer.unobserve(img);
+    document.querySelectorAll('.service-card').forEach(function (card) {
+      card.addEventListener('click', function () {
+        const selectedService = card.dataset.service;
+        if (serviceSelect && selectedService) {
+          Array.from(serviceSelect.options).forEach(function (option) {
+            if (option.textContent.trim() === selectedService) {
+              serviceSelect.value = option.value || option.textContent;
             }
-        });
-    });
-
-    document.querySelectorAll('img[data-src]').forEach(img => imageObserver.observe(img));
-}
-
-// Add active class to current nav link
-window.addEventListener('scroll', () => {
-    let current = '';
-    const sections = document.querySelectorAll('section');
-    
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        if (pageYOffset >= sectionTop - 200) {
-            current = section.getAttribute('id');
+          });
         }
+        scrollToSection('#booking');
+      });
     });
 
-    document.querySelectorAll('nav a').forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href').slice(1) === current) {
-            link.classList.add('active');
+    if (bookingForm) {
+      bookingForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const name = bookingForm.querySelector('input[name="name"]')?.value.trim();
+        const phone = bookingForm.querySelector('input[name="phone"]')?.value.trim();
+        const email = bookingForm.querySelector('input[name="email"]')?.value.trim();
+        const service = bookingForm.querySelector('select[name="service"]')?.value.trim();
+        const date = bookingForm.querySelector('input[name="date"]')?.value.trim();
+        const time = bookingForm.querySelector('input[name="time"]')?.value.trim();
+
+        if (!name || !phone || !email || !service || !date || !time) {
+          showNotification('Please fill out all required fields.', 'error');
+          return;
         }
-    });
-});
 
-// Add click animation to buttons
-document.querySelectorAll('.cta-button, .submit-btn, .btn-book').forEach(button => {
-    button.addEventListener('click', function(e) {
-        const ripple = document.createElement('span');
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-
-        ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            left: ${x}px;
-            top: ${y}px;
-            pointer-events: none;
-            animation: ripple 0.6s ease-out;
-        `;
-
-        this.style.position = 'relative';
-        this.style.overflow = 'hidden';
-        this.appendChild(ripple);
-
-        setTimeout(() => ripple.remove(), 600);
-    });
-});
-
-// Ripple animation
-const rippleStyle = document.createElement('style');
-rippleStyle.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
+        const emailIsValid = email.includes('@') && email.includes('.');
+        if (!emailIsValid) {
+          showNotification('Please enter a valid email address.', 'error');
+          return;
         }
+
+        showNotification('Appointment request sent! We will contact you soon to confirm.', 'success');
+        bookingForm.reset();
+      });
     }
-`;
-document.head.appendChild(rippleStyle);
 
-// Form input validation
-document.querySelectorAll('.booking-form input, .booking-form select').forEach(input => {
-    input.addEventListener('blur', function() {
-        if (this.value.trim() === '') {
-            this.style.borderColor = '#d9534f';
-        } else {
-            this.style.borderColor = '#a89968';
-        }
-    });
+    function showNotification(message, type) {
+      const existing = document.querySelector('.notification');
+      if (existing) existing.remove();
 
-    input.addEventListener('focus', function() {
-        this.style.borderColor = '#8b7355';
-    });
-});
+      const notification = document.createElement('div');
+      notification.className = 'notification ' + type;
+      notification.textContent = message;
+      document.body.appendChild(notification);
 
-// Mobile menu toggle (if added in future)
-const menuToggle = document.querySelector('.menu-toggle');
-if (menuToggle) {
-    menuToggle.addEventListener('click', function() {
-        document.querySelector('.nav-links').classList.toggle('active');
-    });
-}
-
-// Service card click to scroll to booking
-document.querySelectorAll('.service-card').forEach(card => {
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', function() {
-        document.querySelector('#booking').scrollIntoView({ behavior: 'smooth' });
-    });
-});
-
-// Initialize tooltips
-document.querySelectorAll('[title]').forEach(element => {
-    element.addEventListener('mouseenter', function() {
-        // Tooltip is handled by browser default
-    });
-});
-
-// Date input - set minimum date to today
-const dateInput = document.querySelector('input[type="date"]');
-if (dateInput) {
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.setAttribute('min', today);
-}
-
-// Time input - set working hours (9 AM to 6 PM)
-const timeInput = document.querySelector('input[type="time"]');
-if (timeInput) {
-    timeInput.setAttribute('min', '09:00');
-    timeInput.setAttribute('max', '18:00');
-}
-
-console.log('Spa & Beauty Salon Website - All scripts loaded successfully! 🌸');
+      setTimeout(function () {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(30px)';
+        setTimeout(function () {
+          notification.remove();
+        }, 250);
+      }, 4200);
+    }
+  });
+</script>
+</body>
+</html>
